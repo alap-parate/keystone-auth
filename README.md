@@ -1,6 +1,6 @@
 # 🚀 nest-auth-boilerplate
 
-A **production-ready authentication boilerplate** built with [NestJS](https://nestjs.com/).  
+A **production-ready (work in progress) authentication boilerplate** built with [NestJS](https://nestjs.com/).  
 This project provides a **scalable, enterprise-grade foundation** for handling authentication and authorization in your applications.
 
 ---
