@@ -1,27 +1,55 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import * as bcrypt from 'bcrypt';
 import { UserService } from '@/user/user.service';
+import { TokenService } from './token.service';
 import { User } from '@/user/entities/user.entity';
-import { LoginDto } from '../dto';
+import { LoginDto, LoginResponseDto } from '../dto';
 
 @Injectable()
 export class AuthService {
   constructor(
-    private readonly userService: UserService
+    private readonly userService: UserService,
+    private readonly tokenService: TokenService
   ) {}
   
-  async validateUser(email: string, password: string): Promise<User> {
-    const user = await this.userService.findByEmail(email);
+  async comparePassword(password: string, pwdHash: string): Promise<boolean> {
+    return bcrypt.compare(password, pwdHash);
+  }
+
+  async login(login: LoginDto): Promise<LoginResponseDto> {
+    const user = await this.userService.findByEmail(login.email);
     if (!user) throw new UnauthorizedException('Invalid Credentials');
 
-    const isPasswordValid = await bcrypt.compare(password, user.pwdHash);
+    const isPasswordValid = await this.comparePassword(login.password, user.pwdHash);
     if (!isPasswordValid) throw new UnauthorizedException('Invalid Credentials');
 
-    return user;
+    const token = await this.tokenService.signAccessToken({
+      email: user.email,
+      sub: user.id,
+    });
+
+    return {
+      token: 'token',
+      refreshToken: 'refreshToken',
+      tokenExpires: 1000,
+      user: user
+    };
   }
 
-  async login(email: string, password: string) {
-    const user = await this.validateUser(email, password);
-    const payload = { email: user.email, sub: user.id };
-  }
+  async register() {}
+
+  async confirmEmail () {}
+
+  async forgotPassword () {}
+
+  async resetPassword () {}
+
+  async me () {}
+
+  async update () {}
+  
+  async refreshToken () {}
+
+  async logout () {}
+
 }

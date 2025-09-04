@@ -1,4 +1,3 @@
-export class Session {}
 import {
     Entity,
     PrimaryGeneratedColumn,
@@ -7,21 +6,28 @@ import {
     JoinColumn,
     CreateDateColumn,
     UpdateDateColumn,
+    DeleteDateColumn,
     Index,
-    OneToMany,
 } from "typeorm"
 
 import { User } from "@/user/entities/user.entity";
-import { RefreshToken } from "@/auth/entities/refresh-token.entity";
 
 @Entity({ name: 'user_sessions' })
 export class UserSession {
     @PrimaryGeneratedColumn('uuid')
     id: string;
 
+    @Index()
     @ManyToOne(() => User, (user) => user.sessions, { onDelete: 'CASCADE'})
     @JoinColumn({ name: 'userId' })
     user: User;
+
+    @Index({ unique: true })
+    @Column({ name: "jti", nullable: false })
+    jti: string;
+  
+    @Column({ name: "refreshtoken_hash", nullable: false })
+    refreshTokenHash: string;
 
     @Column({ name: 'ip_address', type: 'inet', nullable: true})
     ipAddress: string;
@@ -29,11 +35,8 @@ export class UserSession {
     @Column({ name: 'user_agent', nullable: true })
     userAgent: string;
 
-    @Column({ default: true })
-    isValid: boolean;
-
-    @Column({ name: 'revoked_at', nullable: true, type: 'timestamptz' })
-    revokedAt: Date;
+    @Column({ name: "expires_at", nullable: false, type: "timestamptz" })
+    expiresAt: Date;
 
     @CreateDateColumn({ name: 'created_at', type: 'timestamptz'})
     createdAt: Date;
@@ -41,6 +44,7 @@ export class UserSession {
     @UpdateDateColumn({ name: 'updated_at', type: 'timestamptz' })
     updatedAt: Date;
 
-    @OneToMany(() => RefreshToken, (refreshToken) => refreshToken.session)
-    refreshTokens: RefreshToken[];
+    @DeleteDateColumn({ name: 'deleted_at', type: 'timestamptz' })
+    revokedAt: Date;
+
 }

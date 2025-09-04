@@ -6,11 +6,10 @@ import { PermissionModule } from './permission/permission.module';
 import { SessionModule } from './session/session.module';
 import { ConfigModule } from '@nestjs/config';
 import { MailModule } from './mail/mail.module';
-import databaseConfig from './database/config/database.config';
-import appConfig from './config/app.config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { TypeOrmConfigService } from './database/typeorm-config.service';
 import { DataSource, DataSourceOptions } from 'typeorm';
+import configuration from './config/configuration';
 
 const DatabaseModule = 
   TypeOrmModule.forRootAsync({
@@ -26,8 +25,7 @@ const DatabaseModule =
       isGlobal: true,
       envFilePath: [`.env.${process.env.NODE_ENV}`, '.env'],
       load: [
-        appConfig,
-        databaseConfig,
+        configuration,
       ],
     }),
     DatabaseModule,

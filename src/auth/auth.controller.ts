@@ -2,7 +2,7 @@ import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards } from '@n
 import { AuthService } from './services/auth.service';
 import { LoginDto } from './dto';
 import { LocalAuthGuard } from './guards/local-auth.guard';
-import { JwtService } from './services/jwt.service';
+import { JwtService } from './services/token.service';
 
 @Controller('auth')
 export class AuthController {

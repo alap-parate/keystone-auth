@@ -1,39 +1,30 @@
 import 'reflect-metadata';
 import { DataSource, DataSourceOptions } from 'typeorm';
+import configuration from '../config/configuration';
+
+const config = configuration();
 
 export const AppDataSource = new DataSource({
-  type: process.env.DATABASE_TYPE,
-  url: process.env.DATABASE_URL,
-  host: process.env.DATABASE_HOST,
-  port: process.env.DATABASE_PORT
-    ? parseInt(process.env.DATABASE_PORT, 10)
-    : 5432,
-  username: process.env.DATABASE_USERNAME,
-  password: process.env.DATABASE_PASSWORD,
-  database: process.env.DATABASE_NAME,
-  synchronize: process.env.DATABASE_SYNCHRONIZE === 'true',
+  type: config.database.type as any,
+  url: config.database.url,
+  host: config.database.host,
+  port: config.database.port,
+  username: config.database.username,
+  password: config.database.password,
+  database: config.database.name,
+  synchronize: config.database.synchronize,
   dropSchema: false,
-  keepConnectionAlive: true,
-  logging: process.env.NODE_ENV !== 'production',
+  logging: config.app.env !== 'production',
   entities: [__dirname + '/../**/*.entity{.ts,.js}'],
   migrations: [__dirname + '/migrations/**/*{.ts,.js}'],
-  cli: {
-    entitiesDir: 'src',
-
-    subscribersDir: 'subscriber',
-  },
   extra: {
-    max: process.env.DATABASE_MAX_CONNECTIONS
-      ? parseInt(process.env.DATABASE_MAX_CONNECTIONS, 10)
-      : 100,
-    ssl:
-      process.env.DATABASE_SSL_ENABLED === 'true'
+    max: config.database.maxConnections,
+    ssl: config.database.sslEnabled
         ? {
-            rejectUnauthorized:
-              process.env.DATABASE_REJECT_UNAUTHORIZED === 'true',
-            ca: process.env.DATABASE_CA ?? undefined,
-            key: process.env.DATABASE_KEY ?? undefined,
-            cert: process.env.DATABASE_CERT ?? undefined,
+            rejectUnauthorized: config.database.rejectUnauthorized,
+            ca: config.database.ca ?? undefined,
+            key: config.database.key ?? undefined,
+            cert: config.database.cert ?? undefined,
           }
         : undefined,
   },

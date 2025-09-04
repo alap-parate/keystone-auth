@@ -1,30 +1,35 @@
-import { IsNotEmpty, IsOptional, IsString } from 'class-validator';
+import { PartialType, ApiPropertyOptional } from '@nestjs/swagger';
+import { CreateUserDto } from './create-user.dto';
+
+import { Type } from 'class-transformer';
+import { IsNotEmpty, IsOptional, IsString, MaxLength } from 'class-validator';
+import { RoleDto } from '@/role/dto/role.dto';
+import { StatusDto } from './status.dto';
 import { StrongPassword } from '@/common';
-import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { Transform } from 'class-transformer';
-import { lowerCaseTransformer } from '@/utils/transformers/lower-case.transformer';
 
-export class RegisterUserDto {
+export class UpdateUserDto extends PartialType(CreateUserDto) {
+  @ApiPropertyOptional()
+  @StrongPassword()
+  password?: string;
 
-    @ApiProperty({ example: 'John Doe', type: String })
-    @IsNotEmpty()
-    @IsString()
-    @Transform(lowerCaseTransformer)
-    name: string;
+  @ApiPropertyOptional({ example: 'John Doe', type: String })
+  @IsString()
+  @IsNotEmpty()
+  name: string;
 
-    @ApiProperty({ example: '+919876543210', type: String })
-    @IsString()
-    phoneNo: string;
+  @ApiPropertyOptional({ example: '+911234567890', type: String })
+  @IsString()
+  @IsOptional()
+  @MaxLength(14)
+  phoneNo?: string;
 
-    @ApiPropertyOptional()
-    @IsOptional()
-    @IsNotEmpty()
-    @StrongPassword()
-    password: string;
+  @ApiPropertyOptional({ type: () => RoleDto })
+  @IsOptional()
+  @Type(() => RoleDto)
+  role?: RoleDto | null;
 
-    @ApiPropertyOptional()
-    @IsOptional()
-    @IsNotEmpty()
-    oldPassword: string;
-
+  @ApiPropertyOptional({ type: () => StatusDto })
+  @IsOptional()
+  @Type(() => StatusDto)
+  status?: StatusDto;
 }

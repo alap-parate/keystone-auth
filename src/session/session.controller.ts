@@ -1,34 +1,36 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Param, HttpStatus, HttpCode, ParseUUIDPipe } from '@nestjs/common';
 import { SessionService } from './session.service';
-import { CreateSessionDto } from './dto/create-session.dto';
-import { UpdateSessionDto } from './dto/update-session.dto';
+import { ApiBearerAuth, ApiNoContentResponse, ApiOkResponse, ApiTags } from '@nestjs/swagger';
+import { SessionListResponseDto } from './dto/session-list-response.dto';
 
+@ApiTags('Session')
 @Controller('session')
 export class SessionController {
   constructor(private readonly sessionService: SessionService) {}
 
-  @Post()
-  create(@Body() createSessionDto: CreateSessionDto) {
-    return this.sessionService.create(createSessionDto);
-  }
-
+  @ApiBearerAuth()
   @Get()
-  findAll() {
-    return this.sessionService.findAll();
+  @ApiOkResponse({
+    type: SessionListResponseDto,
+    isArray: true,
+  })
+  async list(@Param('userId', new ParseUUIDPipe()) userId: string): Promise<SessionListResponseDto[]> {
+    return await this.sessionService.list({userId});
   }
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.sessionService.findOne(+id);
+  @ApiBearerAuth()
+  @ApiNoContentResponse()
+  @Post('/revoke')
+  @HttpCode(HttpStatus.NO_CONTENT)
+  async revoke(@Param('id') id: string): Promise<void> {
+    return await this.sessionService.revoke({ id });
   }
 
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateSessionDto: UpdateSessionDto) {
-    return this.sessionService.update(+id, updateSessionDto);
-  }
-
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.sessionService.remove(+id);
+  @ApiBearerAuth()
+  @ApiNoContentResponse()
+  @Post('revoke-all')
+  @HttpCode(HttpStatus.NO_CONTENT)
+  async revokeAll(@Param('userId', new ParseUUIDPipe()) userId: string): Promise<void> {
+    return await this.sessionService.revokeAll({userId});
   }
 }

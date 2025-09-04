@@ -7,7 +7,9 @@ import {
     CreateDateColumn,
     UpdateDateColumn,
     OneToMany,
+    DeleteDateColumn,
  } from "typeorm";
+import { StatusEnum } from "./status.enum";
 
 @Entity({ name: 'users' })
 export class User {
@@ -20,39 +22,45 @@ export class User {
     @Column({ name: 'pwd_hash'})
     pwdHash: string;
 
-    @Column({ name: 'phoneno', nullable: true, length: 14, unique: true })
-    phoneNo: string;
-
     @Column({ name: 'name', nullable: true, length: 255 })
     name: string;
 
-    @Column({ name: 'is_active', default: true })
-    isActive: boolean;
-    
-    @Column({ name: 'mfa_secret', nullable: true })
-    mfaSecret: string;
+    @Column({ name: 'phoneno', nullable: true, length: 14, unique: true })
+    phoneNo: string;
 
+    @Column({ name: 'status', default: StatusEnum.active })
+    status: StatusEnum;
+    
     @Column({ name: 'is_mfa_enabled', default: false })
     isMfaEnabled: boolean;
 
-    @Column({ name: 'mfa_backup_codes', nullable: true })
-    mfaBackupCodes?: string;
+    @Column({ name: 'mfa_secret', nullable: true })
+    mfaSecret: string;
+
+    @Column({ name: 'mfa_backup_codes_hash', array: true, nullable: true })
+    mfaBackupCodesHash?: string[];
 
     @Column({ name: 'is_email_verified', default: false })
     isEmailVerified: boolean;
 
-    @Column({ name: 'is_phone_verified', default: false })
-    isPhoneVerified: boolean;
-    
+    @Column({ name: 'email_verification_token', nullable: true })
+    emailConfirmToken: string;
+
+    @Column({ name: 'forgot_password_token', nullable: true })
+    forgotPasswordToken: string;
+
     @OneToMany(() => UserRole, (userRole) => userRole.user)
     roles: UserRole[];
     
     @OneToMany(() => UserSession, (session) => session.user)
     sessions: UserSession[]
 
-    @CreateDateColumn({ name: 'created_at' })
+    @CreateDateColumn({ name: 'created_at', type: 'timestamptz' })
     createdAt: Date;
 
-    @UpdateDateColumn({ name: 'updated_at' })
+    @UpdateDateColumn({ name: 'updated_at', type: 'timestamptz' })
     updatedAt: Date;
+
+    @DeleteDateColumn({ name: 'deleted_at', type: 'timestamptz' })
+    deletedAt: Date;
 }

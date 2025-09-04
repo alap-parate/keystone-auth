@@ -5,22 +5,15 @@ import {
     minLength
 } from 'class-validator';
 import { Injectable } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
 
 @ValidatorConstraint({ async: false })
 @Injectable()
 export class StrongPasswordValidator implements ValidatorConstraintInterface {
-    constructor(
-        private readonly configService: ConfigService
-    ) {}
+    constructor() {}
 
     validate(value: string, args: ValidationArguments): boolean {
-        const enforceStrong = this.configService.get<boolean>(
-            'auth.passwordPolicy.enforceStrongPassword'
-        );
-        const minLength = this.configService.get<number>(
-            'auth.passwordPolicy.minPasswordLength',
-        ) ?? 8;
+        const enforceStrong = true;
+        const minLength = 8;
         
         if(!enforceStrong) return true;
 
