@@ -10,7 +10,8 @@ import {
     DeleteDateColumn,
  } from "typeorm";
 import { StatusEnum } from "./status.enum";
-
+import { TwoFactor } from "@/auth/entities/two-factor.entity";
+import { OneToOne } from "typeorm";
 @Entity({ name: 'users' })
 export class User {
     @PrimaryGeneratedColumn('uuid')
@@ -34,12 +35,6 @@ export class User {
     @Column({ name: 'is_mfa_enabled', default: false })
     isMfaEnabled: boolean;
 
-    @Column({ name: 'mfa_secret', nullable: true })
-    mfaSecret: string;
-
-    @Column({ name: 'mfa_backup_codes_hash', array: true, nullable: true })
-    mfaBackupCodesHash?: string[];
-
     @Column({ name: 'is_email_verified', default: false })
     isEmailVerified: boolean;
 
@@ -54,6 +49,9 @@ export class User {
     
     @OneToMany(() => UserSession, (session) => session.user)
     sessions: UserSession[]
+
+    @OneToOne(() => TwoFactor, (twoFactor) => twoFactor.user)
+    twoFactor: TwoFactor;
 
     @CreateDateColumn({ name: 'created_at', type: 'timestamptz' })
     createdAt: Date;
