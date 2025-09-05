@@ -1,8 +1,8 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsNumber } from 'class-validator';
+import { IsUUID } from 'class-validator';
 
 export class RoleDto {
   @ApiProperty()
-  @IsNumber()
-  id: number | string;
+  @IsUUID()
+  id: string;
 }

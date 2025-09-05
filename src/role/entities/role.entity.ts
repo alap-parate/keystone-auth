@@ -35,4 +35,3 @@ export class Role {
     @UpdateDateColumn({ name: 'updated_at', type: 'timestamptz' })
     updatedAt: Date;
 }
-
