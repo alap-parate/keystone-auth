@@ -1,4 +1,12 @@
-import { PartialType } from '@nestjs/mapped-types';
-import { CreatePermissionDto } from './create-permission.dto';
+import { ApiProperty } from '@nestjs/swagger';
+import { IsUUID } from 'class-validator';
 
-export class UpdatePermissionDto extends PartialType(CreatePermissionDto) {}
+export class UpdatePermissionDto {
+    @ApiProperty()
+    @IsUUID()
+    id: string;
+
+    @ApiProperty()
+    @IsUUID()
+    permissionIds: string[];
+}
